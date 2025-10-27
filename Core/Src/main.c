@@ -1,33 +1,7 @@
-
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "bmpxxx.h"
 
-/* Private includes ----------------------------------------------------------*/
-
-/* Private typedef -----------------------------------------------------------*/
-
-/* Private define ------------------------------------------------------------*/
-
-/* Private macro -------------------------------------------------------------*/
-
-/* Private variables ---------------------------------------------------------*/
+BMP_HandleTypeDef hbmp;
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_rx;
 
@@ -35,10 +9,6 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart2_tx;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -72,15 +42,30 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
 
-  BMP_Init(&hspi1);
+  BMP_Init(&hbmp, &hspi1);
 
   /* Infinite loop */
 
   while (1)
   {
-  
+    
   }
 
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  switch (GPIO_Pin)
+  {
+    case GYRO_INTERRUPT_Pin:
+      break;
+    case ACCEL_INTERRUPT_Pin:
+      break;
+    case BMP_INTERRUPT_Pin: 
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -239,7 +224,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(STATUS_GPIO_Port, STATUS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NBMP_CS_GPIO_Port, NBMP_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(NBMP_CS_GPIO_Port, NBMP_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : NGYRO_CS_Pin NACCEL_CS_Pin */
   GPIO_InitStruct.Pin = NGYRO_CS_Pin|NACCEL_CS_Pin;
@@ -268,15 +253,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(STATUS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : XBEE_DTR_Pin BMP_INTERRUPT_Pin */
-  GPIO_InitStruct.Pin = XBEE_DTR_Pin|BMP_INTERRUPT_Pin;
+  /*Configure GPIO pin : XBEE_DTR_Pin */
+  GPIO_InitStruct.Pin = XBEE_DTR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(XBEE_DTR_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : GYRO_INTERRUPT_Pin ACCEL_INTERRUPT_Pin */
   GPIO_InitStruct.Pin = GYRO_INTERRUPT_Pin|ACCEL_INTERRUPT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -287,8 +272,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(NBMP_CS_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : BMP_INTERRUPT_Pin */
+  GPIO_InitStruct.Pin = BMP_INTERRUPT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BMP_INTERRUPT_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure peripheral I/O remapping */
   __HAL_AFIO_REMAP_PD01_ENABLE();
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 

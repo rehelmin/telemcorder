@@ -20,21 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
-/* Private includes ----------------------------------------------------------*/
 
-
-
-/* Private typedef -----------------------------------------------------------*/
-
-/* Private define ------------------------------------------------------------*/
-
-/* Private macro -------------------------------------------------------------*/
-
-/* Private variables ---------------------------------------------------------*/
-
-/* Private function prototypes -----------------------------------------------*/
-
-/* Private user code ---------------------------------------------------------*/
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_spi1_rx;
@@ -194,6 +180,21 @@ void USART2_IRQHandler(void)
 
 }
 
-/* USER CODE BEGIN 1 */
+/**
+  * @brief This function handles EXTI line0 interrupt.
+  */
+void EXTI0_IRQHandler(void)
+{
 
-/* USER CODE END 1 */
+  HAL_GPIO_EXTI_IRQHandler(GYRO_INTERRUPT_Pin);
+
+}
+
+/**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(ACCEL_INTERRUPT_Pin);
+  HAL_GPIO_EXTI_IRQHandler(BMP_INTERRUPT_Pin);
+}

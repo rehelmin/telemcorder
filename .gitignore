@@ -55,3 +55,9 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Datasheets
+doc/*
+
+*.sublime-workspace
+*.sublime-project
