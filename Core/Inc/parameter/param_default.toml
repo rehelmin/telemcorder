@@ -1,0 +1,3 @@
+[parameters]
+system_version = {id = 0x0001, type = "int32", value = 0x0, long_desc = "Telemcorder system version"}
+stream_block_size = {id = 0x0002, type = "int32", value = 100, long_desc = "Block size to use when streaming data across the RF link. Actual frames will be 3x this value."}

@@ -4,7 +4,7 @@ Parameter Dictionary Generator using Jinja2 Templates
 Generates param_dict.h from CSV/JSON using customizable templates
 """
 
-import json
+import tomllib
 import csv
 from typing import List, Dict, Any
 from jinja2 import Template, Environment, FileSystemLoader
@@ -14,28 +14,20 @@ class ParamGenerator:
     def __init__(self, template_dir: str = "."):
         self.params = []
         self.env = Environment(loader=FileSystemLoader(template_dir))
-    
-    def load_from_csv(self, filename: str):
-        """Load parameters from CSV file with columns: param_id,name,value,type"""
-        with open(filename, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                self._add_param_from_dict(row)
-        self.source_file = filename
-    
-    def load_from_json(self, filename: str):
-        """Load parameters from JSON file"""
-        with open(filename, 'r') as f:
-            data = json.load(f)
+
+    def load_from_toml(self, filename: str):
+        """Load parameters from TOML file"""
+        with open(filename, 'rb') as f:
+            data = tomllib.load(f)
         
-        for param in data['parameters']:
+        for param in data['parameters'].items():
             self._add_param_from_dict(param)
         self.source_file = filename
     
     def _add_param_from_dict(self, param_dict: Dict[str, Any]):
         """Helper to add parameter from dictionary"""
         param_id_key = 'param_id' if 'param_id' in param_dict else 'id'
-        param_id = param_dict[param_id_key]
+        param_id = param_dict[1][param_id_key]
         
         # Handle hex strings
         if isinstance(param_id, str) and param_id.startswith('0x'):
@@ -43,14 +35,14 @@ class ParamGenerator:
         else:
             param_id = int(param_id)
         
-        param_type = param_dict['type'].lower()
-        value = param_dict['value']
+        param_type = param_dict[1]['type'].lower()
+        value = param_dict[1]['value']
         
-        self._add_parsed_param(param_id, param_dict['name'], value, param_type)
+        self._add_parsed_param(param_id, param_dict[0], value, param_type)
     
     def _add_parsed_param(self, param_id: int, name: str, value: Any, param_type: str):
         """Add a parsed parameter to the list"""
-        type_code_map = {'int32': 0, 'float': 1, 'string': 2, 'pointer': 2}
+        type_code_map = {'int32': 0,'float': 1, 'string': 2, 'pointer': 2}
         
         # Format value for C code
         if param_type == 'int32':
@@ -117,28 +109,11 @@ def main():
     """Example usage"""
     gen = ParamGenerator()
     
-    # Add parameters programmatically
-    gen.add_param(0x0001, "system_version", 100, "int32")
-    gen.add_param(0x0010, "motor_speed", 1500.0, "float")
-    gen.add_param(0x0020, "sensor_offset", -25, "int32")
-    gen.add_param(0x0030, "calibration_data", "NULL", "pointer")
-    gen.add_param(0x0040, "max_temperature", 85.5, "float")
-    gen.add_param(0x0050, "device_name", "STM32_Device", "string")
-    gen.add_param(0x0100, "control_mode", 2, "int32")
-    gen.add_param(0x0200, "pid_kp", 0.8, "float")
-    gen.add_param(0x0201, "pid_ki", 0.1, "float")
-    gen.add_param(0x0202, "pid_kd", 0.05, "float")
+    gen.load_from_toml("param_defs.toml")
     
     # Generate with custom template (required)
     # create_example_template()
     gen.generate_header("param_dict.h", "param_dict_template.h.j2")
-    
-    print("\nTo use with CSV:")
-    print("gen.load_from_csv('params.csv')")
-    print("gen.generate_header()")
-    
-    print("\nTo install Jinja2:")
-    print("pip install jinja2")
 
 
 if __name__ == "__main__":
