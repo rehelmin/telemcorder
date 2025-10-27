@@ -15,23 +15,23 @@ extern "C" {
 
 // Error Register
 #define BMP384_ERR_REG_ADDR          0x02  // Error flags
-#define BMP384_ERR_FATAL             (1 << 0)  // Fatal error
-#define BMP384_ERR_CMD               (1 << 1)  // Command execution error
-#define BMP384_ERR_CONF              (1 << 2)  // Configuration error
+#define BMP384_ERR_FATAL             (0x01 << 0)  // Fatal error
+#define BMP384_ERR_CMD               (0x01 << 1)  // Command execution error
+#define BMP384_ERR_CONF              (0x01 << 2)  // Configuration error
 
 // Status Register
 #define BMP384_STATUS_ADDR           0x03  // Data ready status
-#define BMP384_STATUS_CMD_RDY        (1 << 4)  // Command ready
-#define BMP384_STATUS_DRDY_PRESS     (1 << 5)  // Pressure data ready
-#define BMP384_STATUS_DRDY_TEMP      (1 << 6)  // Temperature data ready
+#define BMP384_STATUS_CMD_RDY        (0x01 << 4)  // Command ready
+#define BMP384_STATUS_DRDY_PRESS     (0x01 << 5)  // Pressure data ready
+#define BMP384_STATUS_DRDY_TEMP      (0x01 << 6)  // Temperature data ready
 
 // Pressure and Temperature Data Registers
-#define BMP384_DATA_0_ADDR           0x04  // press_7_0
-#define BMP384_DATA_1_ADDR           0x05  // press_15_8
-#define BMP384_DATA_2_ADDR           0x06  // press_23_16
-#define BMP384_DATA_3_ADDR           0x07  // temp_7_0
-#define BMP384_DATA_4_ADDR           0x08  // temp_15_8
-#define BMP384_DATA_5_ADDR           0x09  // temp_23_16
+#define BMP384_DATA_0_ADDR           0x04  // press_xlsb_7_0
+#define BMP384_DATA_1_ADDR           0x05  // press_lsb_15_8
+#define BMP384_DATA_2_ADDR           0x06  // press_msb_23_16
+#define BMP384_DATA_3_ADDR           0x07  // temp_xlsb_7_0
+#define BMP384_DATA_4_ADDR           0x08  // temp_lsb_15_8
+#define BMP384_DATA_5_ADDR           0x09  // temp_msb_23_16
 
 // Sensor Time Registers
 #define BMP384_SENSORTIME_0_ADDR     0x0C  // sensor_time_7_0
@@ -45,9 +45,9 @@ extern "C" {
 
 // Interrupt Status
 #define BMP384_INT_STATUS_ADDR       0x11  // Interrupt status flags
-#define BMP384_INT_STATUS_FIFO_FULL  (1 << 0)  // FIFO full interrupt
-#define BMP384_INT_STATUS_FIFO_WTM   (1 << 1)  // FIFO watermark interrupt
-#define BMP384_INT_STATUS_DRDY       (1 << 3)  // Data ready interrupt
+#define BMP384_INT_STATUS_FWM_INT    (0x01 << 0)  // FIFO watermark interrupt
+#define BMP384_INT_STATUS_FFULL_INT  (0x01 << 1)  // FIFO full interrupt
+#define BMP384_INT_STATUS_DRDY       (0x01 << 3)  // Data ready interrupt
 
 // FIFO Length Registers
 #define BMP384_FIFO_LENGTH_0_ADDR    0x12  // fifo_byte_counter_7_0
@@ -62,73 +62,87 @@ extern "C" {
 
 // FIFO Configuration 1
 #define BMP384_FIFO_CONFIG_1_ADDR    0x17
-#define BMP384_FIFO_MODE_POS         0
-#define BMP384_FIFO_MODE_MSK         (0x03 << BMP384_FIFO_MODE_POS)
-#define BMP384_FIFO_STOP_ON_FULL_POS 1
-#define BMP384_FIFO_STOP_ON_FULL_MSK (0x01 << BMP384_FIFO_STOP_ON_FULL_POS)
-#define BMP384_FIFO_TIME_EN_POS      2
-#define BMP384_FIFO_TIME_EN_MSK      (0x01 << BMP384_FIFO_TIME_EN_POS)
-#define BMP384_FIFO_PRESS_EN_POS     3
-#define BMP384_FIFO_PRESS_EN_MSK     (0x01 << BMP384_FIFO_PRESS_EN_POS)
-#define BMP384_FIFO_TEMP_EN_POS      4
-#define BMP384_FIFO_TEMP_EN_MSK      (0x01 << BMP384_FIFO_TEMP_EN_POS)
-#define BMP384_FIFO_SUBSAMP_POS      5
-#define BMP384_FIFO_SUBSAMP_MSK      (0x07 << BMP384_FIFO_SUBSAMP_POS)
-#define BMP384_FIFO_DATA_SELECT_POS  0
-#define BMP384_FIFO_DATA_SELECT_MSK  (0x03 << BMP384_FIFO_DATA_SELECT_POS)
+#define BMP384_FIFO_MODE_Pos         0
+#define BMP384_FIFO_MODE_Msk         (0x01 << BMP384_FIFO_MODE_Pos)
+#define BMP384_FIFO_MODE             BMP384_FIFO_MODE_Msk
+#define BMP384_FIFO_STOP_ON_FULL_Pos 1
+#define BMP384_FIFO_STOP_ON_FULL_Msk (0x01 << BMP384_FIFO_STOP_ON_FULL_Pos)
+#define BMP384_FIFO_STOP_ON_FULL     BMP384_FIFO_STOP_ON_FULL_Msk
+#define BMP384_FIFO_TIME_EN_Pos      2
+#define BMP384_FIFO_TIME_EN_Msk      (0x01 << BMP384_FIFO_TIME_EN_Pos)
+#define BMP384_FIFO_TIME_EN          BMP384_FIFO_TIME_EN_Msk
+#define BMP384_FIFO_PRESS_EN_Pos     3
+#define BMP384_FIFO_PRESS_EN_Msk     (0x01 << BMP384_FIFO_PRESS_EN_Pos)
+#define BMP384_FIFO_PRESS_EN         BMP384_FIFO_PRESS_EN_Msk
+#define BMP384_FIFO_TEMP_EN_Pos      4
+#define BMP384_FIFO_TEMP_EN_Msk      (0x01 << BMP384_FIFO_TEMP_EN_Pos)
+#define BMP384_FIFO_TEMP_EN          BMP384_FIFO_TEMP_EN_Msk
 
 // FIFO Configuration 2
 #define BMP384_FIFO_CONFIG_2_ADDR    0x18
-#define BMP384_FIFO_WTM_POS          0
-#define BMP384_FIFO_WTM_MSK          (0x03FF << BMP384_FIFO_WTM_POS)
+#define BMP384_FIFO_SUBSAMP_Pos      0
+#define BMP384_FIFO_SUBSAMP_Msk      (0x07 << BMP384_FIFO_SUBSAMP_Pos)
+#define BMP384_FIFO_SUBSAMP          BMP384_FIFO_SUBSAMP_Msk
+#define BMP384_FIFO_DATA_SELECT_Pos  3
+#define BMP384_FIFO_DATA_SELECT_Msk  (0x03 << BMP384_FIFO_DATA_SELECT_Pos)
+#define BMP384_FIFO_DATA_SELECT      BMP384_FIFO_DATA_SELECT_Msk
 
 // Interrupt Control
 #define BMP384_INT_CTRL_ADDR         0x19
-#define BMP384_INT_EN_POS            0
-#define BMP384_INT_EN_MSK            (0x01 << BMP384_INT_EN_POS)
-#define BMP384_INT_LATCH_POS         1
-#define BMP384_INT_LATCH_MSK         (0x01 << BMP384_INT_LATCH_POS)
-#define BMP384_INT_LEVEL_POS         2
-#define BMP384_INT_LEVEL_MSK         (0x01 << BMP384_INT_LEVEL_POS)
-#define BMP384_INT_OD_POS            3
-#define BMP384_INT_OD_MSK            (0x01 << BMP384_INT_OD_POS)
-#define BMP384_INT_FWM_EN_POS        5
-#define BMP384_INT_FWM_EN_MSK        (0x01 << BMP384_INT_FWM_EN_POS)
-#define BMP384_INT_FFULL_EN_POS      6
-#define BMP384_INT_FFULL_EN_MSK      (0x01 << BMP384_INT_FFULL_EN_POS)
-#define BMP384_INT_DRDY_EN_POS      7
-#define BMP384_INT_DRDY_EN_MSK       (0x01 << BMP384_INT_DRDY_EN_POS)
+#define BMP384_INT_OD_Pos            0
+#define BMP384_INT_OD_Msk            (0x01 << BMP384_INT_OD_Pos)
+#define BMP384_INT_OD                BMP384_INT_OD_Msk
+#define BMP384_INT_LEVEL_Pos         1
+#define BMP384_INT_LEVEL_Msk         (0x01 << BMP384_INT_LEVEL_Pos)
+#define BMP384_INT_LEVEL             BMP384_INT_LEVEL_Msk
+#define BMP384_INT_LATCH_Pos         2
+#define BMP384_INT_LATCH_Msk         (0x01 << BMP384_INT_LATCH_Pos)
+#define BMP384_INT_LATCH             BMP384_INT_LATCH_Msk
+#define BMP384_INT_FWTM_EN_Pos       3
+#define BMP384_INT_FWTM_EN_Msk       (0x01 << BMP384_INT_FWTM_EN_Pos)
+#define BMP384_INT_FWTM_EN           BMP384_INT_FWTM_EN_Msk
+#define BMP384_INT_FFULL_EN_Pos      4
+#define BMP384_INT_FFULL_EN_Msk      (0x01 << BMP384_INT_FFULL_EN_Pos)
+#define BMP384_INT_FFULL_EN          BMP384_INT_FFULL_EN_Msk
+#define BMP384_INT_DRDY_EN_Pos       6
+#define BMP384_INT_DRDY_EN_Msk       (0x01 << BMP384_INT_DRDY_EN_Pos)
+#define BMP384_INT_DRDY_EN           BMP384_INT_DRDY_EN_Msk
 
 // Interface Configuration
 #define BMP384_IF_CONF_ADDR          0x1A
-#define BMP384_IF_CONF_SPI3_POS      0
-#define BMP384_IF_CONF_SPI3_MSK      (0x01 << BMP384_IF_CONF_SPI3_POS)
+#define BMP384_IF_CONF_SPI3_Pos      0
+#define BMP384_IF_CONF_SPI3_Msk      (0x01 << BMP384_IF_CONF_SPI3_Pos)
+#define BMP384_IF_CONF_SPI3          BMP384_IF_CONF_SPI3_Msk
 
 // Power Control
 #define BMP384_PWR_CTRL_ADDR         0x1B
-#define BMP384_PWR_CTRL_PRESS_EN_POS 0
-#define BMP384_PWR_CTRL_PRESS_EN_MSK (0x01 << BMP384_PWR_CTRL_PRESS_EN_POS)
-#define BMP384_PWR_CTRL_TEMP_EN_POS  1
-#define BMP384_PWR_CTRL_TEMP_EN_MSK  (0x01 << BMP384_PWR_CTRL_TEMP_EN_POS)
-#define BMP384_PWR_CTRL_MODE_POS     4
-#define BMP384_PWR_CTRL_MODE_MSK     (0x03 << BMP384_PWR_CTRL_MODE_POS)
+#define BMP384_PWR_CTRL_PRESS_EN_Pos 0
+#define BMP384_PWR_CTRL_PRESS_EN_Msk (0x01 << BMP384_PWR_CTRL_PRESS_EN_Pos)
+#define BMP384_PWR_CTRL_PRESS_EN     BMP384_PWR_CTRL_PRESS_EN_Msk
+#define BMP384_PWR_CTRL_TEMP_EN_Pos  1
+#define BMP384_PWR_CTRL_TEMP_EN_Msk  (0x01 << BMP384_PWR_CTRL_TEMP_EN_Pos)
+#define BMP384_PWR_CTRL_TEMP_EN      BMP384_PWR_CTRL_TEMP_EN_Msk
+#define BMP384_PWR_CTRL_MODE_Pos     4
+#define BMP384_PWR_CTRL_MODE_Msk     (0x03 << BMP384_PWR_CTRL_MODE_Pos)
+#define BMP384_PWR_CTRL_MODE         BMP384_PWR_CTRL_MODE_Msk
 
 // Oversampling Configuration
 #define BMP384_OSR_ADDR              0x1C
-#define BMP384_OSR_TEMP_POS          0
-#define BMP384_OSR_TEMP_MSK          (0x07 << BMP384_OSR_TEMP_POS)
-#define BMP384_OSR_PRESS_POS         3
-#define BMP384_OSR_PRESS_MSK         (0x07 << BMP384_OSR_PRESS_POS)
+#define BMP384_OSR_PRESS_Pos         0
+#define BMP384_OSR_PRESS_Msk         (0x07 << BMP384_OSR_PRESS_Pos)
+#define BMP384_OSR_TEMP_Pos          3
+#define BMP384_OSR_TEMP_Msk          (0x07 << BMP384_OSR_TEMP_Pos)
 
 // Output Data Rate
 #define BMP384_ODR_ADDR              0x1D
-#define BMP384_ODR_POS               0
-#define BMP384_ODR_MSK               (0x07 << BMP384_ODR_POS)
+#define BMP384_ODR_Pos               0
+#define BMP384_ODR_Msk               (0x07 << BMP384_ODR_Pos)
+#define BMP384_ODR                   BMP384_ODR_Msk
 
 // Configuration Register
 #define BMP384_CONFIG_ADDR           0x1F
-#define BMP384_CONFIG_IIR_FILTER_POS 0
-#define BMP384_CONFIG_IIR_FILTER_MSK (0x07 << BMP384_CONFIG_IIR_FILTER_POS)
+#define BMP384_CONFIG_IIR_FILTER_Pos 1
+#define BMP384_CONFIG_IIR_FILTER_Msk (0x07 << BMP384_CONFIG_IIR_FILTER_Pos)
 
 // Command Register
 #define BMP384_CMD_ADDR              0x7E
@@ -153,11 +167,73 @@ extern "C" {
 #define BMP384_NVM_PAR_P10_ADDR      0x44  // 1 byte, signed
 #define BMP384_NVM_PAR_P11_ADDR      0x45  // 1 byte, signed
 
+// Power Mode Values
+#define BMP384_MODE_SLEEP            0x00
+#define BMP384_MODE_FORCED           0x01
+#define BMP384_MODE_NORMAL           0x03
+
+// Oversampling Values
+#define BMP384_NO_OVERSAMPLING       0x00
+#define BMP384_OVERSAMPLING_2X       0x01
+#define BMP384_OVERSAMPLING_4X       0x02
+#define BMP384_OVERSAMPLING_8X       0x03
+#define BMP384_OVERSAMPLING_16X      0x04
+#define BMP384_OVERSAMPLING_32X      0x05
+
+// ODR (Output Data Rate) Values
+#define BMP384_ODR_200_HZ            0x00
+#define BMP384_ODR_100_HZ            0x01
+#define BMP384_ODR_50_HZ             0x02
+#define BMP384_ODR_25_HZ             0x03
+#define BMP384_ODR_12_5_HZ           0x04
+#define BMP384_ODR_6_25_HZ           0x05
+#define BMP384_ODR_3_1_HZ            0x06
+#define BMP384_ODR_1_5_HZ            0x07
+
+// IIR Filter Coefficients
+#define BMP384_IIR_FILTER_BYPASS     0x00
+#define BMP384_IIR_FILTER_COEFF_1    0x01
+#define BMP384_IIR_FILTER_COEFF_3    0x02
+#define BMP384_IIR_FILTER_COEFF_7    0x03
+#define BMP384_IIR_FILTER_COEFF_15   0x04
+#define BMP384_IIR_FILTER_COEFF_31   0x05
+#define BMP384_IIR_FILTER_COEFF_63   0x06
+#define BMP384_IIR_FILTER_COEFF_127  0x07
+
+
+// Expected chip ID
+#define BMP384_CHIP_ID_VALUE         0x50
+
+/**
+  * @brief BMP State structure definition
+  */
+typedef enum
+{
+  BMP_STATE_RESET      = 0x00U,    /*!< Peripheral not Initialized                         */
+  BMP_STATE_READY      = 0x01U,    /*!< Peripheral Initialized and ready for use           */
+  BMP_STATE_BUSY       = 0x02U,    /*!< an internal process is ongoing                     */
+  BMP_STATE_ERROR      = 0x03U,    /*!< BMP error state                                    */
+} BMP_StateTypeDef;
+
+typedef struct __BMP_HandleTypeDef
+{
+	SPI_HandleTypeDef *hspi;
+	BMP_StateTypeDef state;
+
+} BMP_HandleTypeDef;
+
 /**
  * @brief Initialize the communication interface to the BMP sensor.
- * param @hspi A handle to the SPI peripheral.
+ * 
+ * @param hbmp A statically allocated handle for the BMP driver to use.
+ * @param hspi A handle to the SPI peripheral.
 */
-int BMP_Init(SPI_HandleTypeDef *hspi);
+int BMP_Init(BMP_HandleTypeDef *hbmp, SPI_HandleTypeDef *hspi);
+
+/**
+ * @brief 
+*/
+int BMP_Rx_Process(BMP_HandleTypeDef *hbmp);
 
 
 
