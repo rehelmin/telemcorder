@@ -17,13 +17,22 @@ param_t	param_find(uint16_t param_id);
 const char *param_name(param_t param);
 
 /**
- * @brief Retrieve a a value of a parameter at a given index
+ * @brief Retrieve a value of a parameter at a given index
  * 
  * @param param		A parameter handle returned by param_find
  * @param val		A pointer for storing the value of appropriate type
  * @return 			Zero if parameter value was successfully retrieved, nonzero otherwise
  */
 int32_t param_get(param_t param, void *val);
+
+/**
+ * @brief Write a value of a parameter at a given index
+ * 
+ * @param param		A parameter handle returned by param_find
+ * @param val		A pointer for storing the value of appropriate type
+ * @return 			Zero if parameter value was successfully retrieved, nonzero otherwise
+ */
+int32_t param_set(param_t param, const void *val);
 
 union param_value_u {
 	void		*p;

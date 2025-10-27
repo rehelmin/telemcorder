@@ -77,3 +77,27 @@ int32_t param_get(param_t param, void *val) {
     
     return 0; // Success
 }
+
+int32_t param_set(param_t param, const void *val) {
+    if (param >= PARAM_COUNT || val == NULL) {
+        return -1; // Invalid parameter or null pointer
+    }
+
+    param_entry_t *entry = &param_dict[param];
+
+    switch (entry->type) {
+        case 0: // int32_t
+            entry->value.i = *(const int32_t*)val;
+            break;
+        case 1: // float
+            entry->value.f = *(const float*)val;
+            break;
+        case 2: // pointer
+            entry->value.p = *(void* const*)val;
+            break;
+        default:
+            return -2; // Invalid type
+    }
+
+    return 0; // Success
+}
